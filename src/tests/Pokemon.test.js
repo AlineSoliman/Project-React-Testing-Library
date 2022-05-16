@@ -1,10 +1,8 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
 import userEvent from '@testing-library/user-event';
 import renderWithRouter from './renderWithRouter';
 import App from '../App';
-import { PokemonDetails } from '../components';
 
 describe('Teste o componente <Pokemon.js />.', () => {
   const moredetails = 'More details';
@@ -13,13 +11,15 @@ describe('Teste o componente <Pokemon.js />.', () => {
     renderWithRouter(<App />);
 
     const pokemonName = screen.getByText('Pikachu');
-    const pokemonType = screen.getAllByText('Electric');
+    const pokemonType = screen.getByTestId('pokemon-type');
+    const type = screen.getAllByText('Electric');
     const pokemonWeight = screen.getByText('Average weight: 6.0 kg');
     const pokemonImg = screen.getByRole('img', { name: 'Pikachu sprite' });
     const pokemonImgAlt = screen.getByAltText('Pikachu sprite');
 
     expect(pokemonName).toBeInTheDocument();
-    expect(pokemonType[0]).toBeInTheDocument();
+    expect(pokemonType).toHaveTextContent('Electric');
+    expect(type[0]).toBeInTheDocument();
     expect(pokemonWeight).toBeInTheDocument();
     expect(pokemonImg).toHaveAttribute('src', 'https://cdn2.bulbagarden.net/upload/b/b2/Spr_5b_025_m.png');
     expect(pokemonImgAlt).toBeInTheDocument();
@@ -29,9 +29,7 @@ describe('Teste o componente <Pokemon.js />.', () => {
     renderWithRouter(<App />);
 
     const details = screen.getByText(moredetails);
-    const pokemonCard = screen.getByText('Pikachu');
     expect(details).toBeInTheDocument();
-    expect(pokemonCard).toHaveAttribute('src', pathPikachu);
   });
 
   test('Teste se ao clicar no link details, é feito o redirecionamento.', () => {
@@ -44,9 +42,10 @@ describe('Teste o componente <Pokemon.js />.', () => {
   });
 
   test('Teste também se a URL exibida no navegador muda para /pokemon/<id>.', () => {
-    const { history } = renderWithRouter(<PokemonDetails />);
+    renderWithRouter(<App />);
 
-    history.push(pathPikachu);
+    const details = screen.getByText(moredetails);
+    userEvent.click(details);
     const detailsPikachu = screen.getByText('Pikachu Details');
     expect(detailsPikachu).toBeInTheDocument();
   });
